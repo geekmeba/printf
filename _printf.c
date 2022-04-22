@@ -1,81 +1,82 @@
 #include "main.h"
+#include <stdlib.h>
+
 /**
- * _printf - is a function that selects the correct function to print.
- * @format: identifier to look for.
- * Return: the length of the string.
+ * check_for_specifiers - checks if there is a valid format specifier
+ * @format: possible format specifier
+ *
+ * Return: pointer to valid function or NULL
  */
-int _printf(const char * format, ...)
-{   
-    const char *traverse;
-    int length = 0;
-	va_list args;
-	va_start(args, format);
-	
-	if ( format == NULL )
-		return (-1);
+static int (*check_for_specifiers(const char *format))(va_list)
+{
+	unsigned int i;
+	print_t p[] = {
+		{"c", print_c},
+		{"s", print_s},
+		{"i", print_i},
+		{"d", print_d},
+		{"u", print_u},
+		{"b", print_b},
+		{"o", print_o},
+		{"x", print_x},
+		{"X", print_X},
+		{"p", print_p},
+		{"S", print_S},
+		{"r", print_r},
+		{"R", print_R},
+		{NULL, NULL}
+	};
 
-    for(traverse = format; *traverse != '\0'; traverse++) 
-	{ 
-        while( *traverse != '%' )
-		{   
-		    _putchar(*traverse);
-            traverse++; 
-            length++;     	
+	for (i = 0; p[i].t != NULL; i++)
+	{
+		if (*(p[i].t) == *format)
+		{
+			break;
 		}
-    
-        traverse++;
-		length++; 
-
-       
-        switch(*traverse) 
-        { 
-            case 'c' : printf_char;        
-                        break; 
-                        
-            case 'i' : printf_int;        
-                        break; 
-						          
-            case 'u' : printf_unsigned;        
-                        break; 
-
-            case 'd' : printf_dec;        
-                        break; 
-
-            case 'o' : printf_oct;
-                        break; 
-
-            case 's':  printf_string;                              
-                        break; 
-
-            case 'p': printf_pointer;
-                        break;
-                        
-			case '%': printf_37;
-			            break;
-                        
-			case 'x': printf_hex;                         
-                        break;
-             
-			case 'X': printf_HEX;    
-                        break;            
-                        
-          	case 'b': printf_bin;    
-                        break; 
-                        
-            case 'S': printf_exclusive_string;
-                        break; 
-                        
-            case 'r': printf_srev;
-                        break; 
-                        
-            case 'R': printf_rot13;
-                        break; 
-                        
-                        
-        }   
-    
 	}
-      	
-	va_end(args);
-	return (length);
+	return (p[i].f);
+}
+
+/**
+ * _printf - prints anything
+ * @format: list of argument types passed to the function
+ *
+ * Return: number of characters printed
+ */
+int _printf(const char *format, ...)
+{
+	unsigned int i = 0, count = 0;
+	va_list valist;
+	int (*f)(va_list);
+
+	if (format == NULL)
+		return (-1);
+	va_start(valist, format);
+	while (format[i])
+	{
+		for (; format[i] != '%' && format[i]; i++)
+		{
+			_putchar(format[i]);
+			count++;
+		}
+		if (!format[i])
+			return (count);
+		f = check_for_specifiers(&format[i + 1]);
+		if (f != NULL)
+		{
+			count += f(valist);
+			i += 2;
+			continue;
+		}
+		if (!format[i + 1])
+			return (-1);
+		_putchar(format[i]);
+		count++;
+		if (format[i + 1] == '%')
+			i += 2;
+		else
+			i++;
+	}
+	va_end(valist);
+	return (count);
 }
