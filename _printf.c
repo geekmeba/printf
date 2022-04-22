@@ -1,47 +1,81 @@
 #include "main.h"
-
 /**
- * _printf - produces output according to a format
- * @format: format string containing the characters and the specifiers
- * Description: this function will call the get_print() function that will
- * determine which printing function to call depending on the conversion
- * specifiers contained into fmt
- * Return: length of the formatted output string
+ * _printf - is a function that selects the correct function to print.
+ * @format: identifier to look for.
+ * Return: the length of the string.
  */
-int _printf(const char *format, ...)
-{
-	int (*pfunc)(va_list, flags_t *);
-	const char *p;
-	va_list arguments;
-	flags_t flags = {0, 0, 0};
-
-	register int count = 0;
-
-	va_start(arguments, format);
-	if (!format || (format[0] == '%' && !format[1]))
+int _printf(const char * format, ...)
+{   
+    const char *traverse;
+    int length = 0;
+	va_list args;
+	va_start(args, format);
+	
+	if ( format == NULL )
 		return (-1);
-	if (format[0] == '%' && format[1] == ' ' && !format[2])
-		return (-1);
-	for (p = format; *p; p++)
-	{
-		if (*p == '%')
-		{
-			p++;
-			if (*p == '%')
-			{
-				count += _putchar('%');
-				continue;
-			}
-			while (get_flag(*p, &flags))
-				p++;
-			pfunc = get_print(*p);
-			count += (pfunc)
-				? pfunc(arguments, &flags)
-				: _printf("%%%c", *p);
-		} else
-			count += _putchar(*p);
+
+    for(traverse = format; *traverse != '\0'; traverse++) 
+	{ 
+        while( *traverse != '%' )
+		{   
+		    _putchar(*traverse);
+            traverse++; 
+            length++;     	
+		}
+    
+        traverse++;
+		length++; 
+
+       
+        switch(*traverse) 
+        { 
+            case 'c' : printf_char;        
+                        break; 
+                        
+            case 'i' : printf_int;        
+                        break; 
+						          
+            case 'u' : printf_unsigned;        
+                        break; 
+
+            case 'd' : printf_dec;        
+                        break; 
+
+            case 'o' : printf_oct;
+                        break; 
+
+            case 's':  printf_string;                              
+                        break; 
+
+            case 'p': printf_pointer;
+                        break;
+                        
+			case '%': printf_37;
+			            break;
+                        
+			case 'x': printf_hex;                         
+                        break;
+             
+			case 'X': printf_HEX;    
+                        break;            
+                        
+          	case 'b': printf_bin;    
+                        break; 
+                        
+            case 'S': printf_exclusive_string;
+                        break; 
+                        
+            case 'r': printf_srev;
+                        break; 
+                        
+            case 'R': printf_rot13;
+                        break; 
+                        
+                        
+        }   
+    
 	}
-	_putchar(-1);
-	va_end(arguments);
-	return (count);
+      	
+	va_end(args);
+	return (length);
 }
