@@ -4,7 +4,7 @@
 .\"
 .\"
 .\"
-.TH _PRINTF "APRIL 21 2022" "0.1" "Library functions manual"
+.TH _PRINTF "May 3 2022" "0.1" "Library functions manual"
 
 .SH NAME
 .SH ""
@@ -32,7 +32,7 @@ These arguments are placed using the percentage '%' operator
 
 .P
 .RS
-#include "main.h"
+#include "holberton.h"
 
 $ gcc -Wall -Werror -Wextra -pedantic -Wno-format *.c
 $ gcc -Wall -Werror -Wextra -pedantic -g -Wno-format *.c (for gdb debbuging)
